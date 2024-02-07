@@ -4,7 +4,7 @@ trait AppUserAuthentication {
     private $appUserLogin = 'app_user';
     private $appUserPassword = 'app_password';
 
-    public function authenticateAppUser($login, $password) {
+    public function authenticate($login, $password) {
         if ($login === $this->appUserLogin && $password === $this->appUserPassword) {
             echo "Пользователь приложения успешно авторизован.\n";
         } else {
@@ -28,19 +28,17 @@ trait MobileUserAuthentication {
 
 class User {
     use AppUserAuthentication, MobileUserAuthentication {
-        AppUserAuthentication::authenticateAppUser as authenticateAppUserTrait;
-        MobileUserAuthentication::authenticateMobileUser as authenticateMobileUserTrait;
+        AppUserAuthentication::authenticate insteadof MobileUserAuthentication;
+        MobileUserAuthentication::authenticateMobileUser as authenticateMobileUserAlias; 
     }
 
     public function performAuthentication($login, $password, $appOrMobile) {
         if ($appOrMobile === 'app') {
-            $this->authenticateAppUserTrait($login, $password);
+            $this->authenticate($login, $password);
         } elseif ($appOrMobile === 'mobile') {
-            $this->authenticateMobileUserTrait($login, $password);
+            $this->authenticateMobileUserAlias($login, $password);
         } else {
             echo "Неверный тип пользователя.\n";
         }
     }
 }
-
-
